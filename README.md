@@ -21,7 +21,7 @@ pod 'RGImageGallery'
 
 ## Usage
 
-### Init with datasource. DataSource provide image data.
+### Init with DataSource. DataSource provide image data.
 - Number
 - Thumbnail
 - Large image
@@ -63,13 +63,13 @@ imageGallery.pushFromView = YES;
 
 ### Push
 
-- Tap wtih Push
+- Push with Tap
 
 ```objective-c
 [imageGallery showImageGalleryAtIndex:indexPath.row fatherViewController:self];
 ```
 
-- PinchGesture with Push
+- Push with PinchGesture
  
 Pinch gesture should add into your view, and control progress by yourself. Here is a example.
 
