@@ -8,14 +8,13 @@
 
 #import "RGImageGallery.h"
 
-#define TEXTFONTSIZE 14
-#define BUTTON_CLICK_WIDTH  100
-#define BUTTON_CLICK_HEIGHT 100
-#define pageWidth (kScreenWidth + 20)
+#define k_RGIMAGE_BUTTON_CLICK_WIDTH  80
+#define k_RGIMAGE_BUTTON_CLICK_HEIGHT 80
+#define kRGImagePageWidth (kRGImageViewWidth + 20)
 
-#define kScreenWidth    (self.view.bounds.size.width)
-#define kScreenHeight   (self.view.bounds.size.height)
-#define kTargetSize     CGSizeMake(kScreenWidth*[UIScreen mainScreen].scale, kScreenHeight*[UIScreen mainScreen].scale)
+#define kRGImageViewWidth    (self.view.bounds.size.width)
+#define kRGImageViewHeight   (self.view.bounds.size.height)
+#define kRGImageLoadTargetSize     CGSizeMake(kRGImageViewWidth*[UIScreen mainScreen].scale, kRGImageViewHeight*[UIScreen mainScreen].scale)
 
 #define SYSTEM_LESS_THAN(v) ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define kRGPlayButtonTag 114115
@@ -27,22 +26,21 @@ typedef enum : NSUInteger {
     RGIGViewIndexCount,
 } RGIGViewIndex;
 
-@interface UIBigButton: UIButton
+@interface _RGImageBigButton: UIButton
 
 @end
 
-@implementation UIBigButton
+@implementation _RGImageBigButton
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
     if (self.alpha != 1) {
         return NO;
     }
-    return [super pointInside:point withEvent:event];
-//    CGRect bounds =self.bounds;
-//    CGFloat widthDelta = BUTTON_CLICK_WIDTH - bounds.size.width;
-//    CGFloat heightDelta = BUTTON_CLICK_HEIGHT - bounds.size.height;
-//    bounds = CGRectInset(bounds, -0.5 * widthDelta, -0.5* heightDelta);
-//    return CGRectContainsPoint(bounds, point);
+    CGRect bounds = self.bounds;
+    CGFloat widthDelta = k_RGIMAGE_BUTTON_CLICK_WIDTH - bounds.size.width;
+    CGFloat heightDelta = k_RGIMAGE_BUTTON_CLICK_HEIGHT - bounds.size.height;
+    bounds = CGRectInset(bounds, -0.5 * MAX(0, widthDelta), -0.5 * MAX(0, heightDelta));
+    return CGRectContainsPoint(bounds, point);
 }
 
 @end
@@ -124,13 +122,13 @@ typedef enum : NSUInteger {
 - (void)clearSubviews {
     self.layout = nil;
     [self.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:UIBigButton.class]) {
+        if ([obj isKindOfClass:_RGImageBigButton.class]) {
             return;
         }
         [obj removeFromSuperview];
     }];
     [self.layer.sublayers enumerateObjectsUsingBlock:^(__kindof CALayer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj.delegate isKindOfClass:UIBigButton.class]) {
+        if ([obj.delegate isKindOfClass:_RGImageBigButton.class]) {
             return;
         }
         [obj removeFromSuperlayer];
@@ -215,7 +213,7 @@ typedef enum : NSUInteger {
         [self setPositionAtPage:_page ignoreIndex:-1];
         
         [self.bgScrollView setDelegate:nil];
-        [self.bgScrollView setContentOffset:CGPointMake(_page*pageWidth, 0) animated:NO];
+        [self.bgScrollView setContentOffset:CGPointMake(_page*kRGImagePageWidth, 0) animated:NO];
         [self getCountWithSetContentSize:YES];
         [self.bgScrollView setDelegate:self];
     }
@@ -328,7 +326,7 @@ typedef enum : NSUInteger {
     for (RGIGViewIndex i = 0; i < RGIGViewIndexCount && self.pushState != RGImageGalleryPushStatePushing; i++) {
         [self configCurrentPageFrameAndScaleAtIndex:i forceReset:NO];
     }
-    [self.bgScrollView setContentOffset:CGPointMake(_page * pageWidth, 0) animated:NO];
+    [self.bgScrollView setContentOffset:CGPointMake(_page * kRGImagePageWidth, 0) animated:NO];
     [self.bgScrollView setDelegate:self];
     [self reloadTitle];
 }
@@ -355,7 +353,7 @@ typedef enum : NSUInteger {
 
 - (UIScrollView *)bgScrollView {
     if (!_bgScrollView) {
-        _bgScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, pageWidth, kScreenHeight)];
+        _bgScrollView = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, kRGImagePageWidth, kRGImageViewHeight)];
         [_bgScrollView setPagingEnabled:YES];
         [_bgScrollView setDelegate:self];
         [_bgScrollView setBackgroundColor:[UIColor clearColor]];
@@ -432,7 +430,7 @@ typedef enum : NSUInteger {
 }
 
 - (UIButton *)buildPlayButton {
-    UIBigButton *play = [[UIBigButton alloc] init];
+    _RGImageBigButton *play = [[_RGImageBigButton alloc] init];
     [play addTarget:self action:@selector(onPlayItem:) forControlEvents:UIControlEventTouchUpInside];
     play.tag = kRGPlayButtonTag;
     play.clipsToBounds = YES;
@@ -443,7 +441,7 @@ typedef enum : NSUInteger {
 }
 
 - (UIScrollView *)buildScrollView {
-    UIScrollView *imageScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+    UIScrollView *imageScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, kRGImageViewWidth, kRGImageViewHeight)];
     [imageScrollView setDelegate:self];
     if (@available(iOS 11.0, *)) {
         imageScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -780,8 +778,8 @@ typedef enum : NSUInteger {
     if (_dataSource && [_dataSource respondsToSelector:@selector(numOfImagesForImageGallery:)]) {
         count = [_dataSource numOfImagesForImageGallery:self];
         if (setSize) {
-            self.bgScrollView.contentSize = CGSizeMake(count*pageWidth, 0);
-            [self.bgScrollView setFrame:CGRectMake(0, 0, pageWidth, kScreenHeight)];
+            self.bgScrollView.contentSize = CGSizeMake(count*kRGImagePageWidth, 0);
+            [self.bgScrollView setFrame:CGRectMake(0, 0, kRGImagePageWidth, kRGImageViewHeight)];
         }
     }
     return count;
@@ -795,9 +793,9 @@ typedef enum : NSUInteger {
         RGImageGalleryView *front = self.frontViewArr[i];
         if (ignore != i) {
             if (current>=0 && current<sum) {
-                [view setFrame:CGRectMake(pageWidth*current, 0, kScreenWidth, self.bgScrollView.frame.size.height)];
+                [view setFrame:CGRectMake(kRGImagePageWidth*current, 0, kRGImageViewWidth, self.bgScrollView.frame.size.height)];
             } else {
-                [view setFrame:CGRectMake(pageWidth*current, 0, kScreenWidth, self.bgScrollView.frame.size.height)];
+                [view setFrame:CGRectMake(kRGImagePageWidth*current, 0, kRGImageViewWidth, self.bgScrollView.frame.size.height)];
             }
             front.frame = view.frame;
         }
@@ -839,7 +837,7 @@ typedef enum : NSUInteger {
 - (UIImage *)getPushImage {
     UIImage *image = nil;
     if (_dataSource && [_dataSource respondsToSelector:@selector(imageGallery:thumbnailAtIndex:targetSize:)]) {
-        image = [_dataSource imageGallery:self thumbnailAtIndex:_page targetSize:kTargetSize];
+        image = [_dataSource imageGallery:self thumbnailAtIndex:_page targetSize:kRGImageLoadTargetSize];
     }
     if (!image) {
         image = _placeHolder;
@@ -849,19 +847,19 @@ typedef enum : NSUInteger {
 
 - (CGRect)getImageViewFrameWithImage:(UIImage *)image {
     if (image && image.size.height > 0 && image.size.width > 0) {
-        CGFloat imageViewWidth = kScreenWidth;
+        CGFloat imageViewWidth = kRGImageViewWidth;
         CGFloat imageViewHeight = image.size.height/image.size.width*imageViewWidth;
-        if (imageViewHeight > kScreenHeight) {
-            imageViewHeight = kScreenHeight;
+        if (imageViewHeight > kRGImageViewHeight) {
+            imageViewHeight = kRGImageViewHeight;
             imageViewWidth = image.size.width/image.size.height*imageViewHeight;
         }
-        return CGRectMake(kScreenWidth/2 - imageViewWidth/2, kScreenHeight/2 - imageViewHeight/2, imageViewWidth, imageViewHeight);
+        return CGRectMake(kRGImageViewWidth/2 - imageViewWidth/2, kRGImageViewHeight/2 - imageViewHeight/2, imageViewWidth, imageViewHeight);
     }
     return CGRectZero;
 }
 
 - (void)__configMaximumZoomScaleWithScrollView:(UIScrollView *)scrollView imageViewSize:(CGSize)size {
-    CGFloat zoomScale = MAX(kScreenHeight/size.height, kScreenWidth/size.width);
+    CGFloat zoomScale = MAX(kRGImageViewHeight/size.height, kRGImageViewWidth/size.width);
     scrollView.maximumZoomScale = zoomScale * 1.5;
 }
 
@@ -875,7 +873,7 @@ typedef enum : NSUInteger {
         return;
     }
     UIImage *image;
-    image = [_dataSource imageGallery:self thumbnailAtIndex:page targetSize:kTargetSize];
+    image = [_dataSource imageGallery:self thumbnailAtIndex:page targetSize:kRGImageLoadTargetSize];
     
     //if image is nil , then show placeHolder
     if (!image) {
@@ -961,7 +959,7 @@ typedef enum : NSUInteger {
         imageView.image = nil;
         return;
     }
-    UIImage *image = [_dataSource imageGallery:self imageAtIndex:page targetSize:kTargetSize updateImage:^(UIImage * _Nonnull image) {
+    UIImage *image = [_dataSource imageGallery:self imageAtIndex:page targetSize:kRGImageLoadTargetSize updateImage:^(UIImage * _Nonnull image) {
         if (image && self.page == page) {
             UIImageView *imageView = self.imageViewArr[RGIGViewIndexM];
             imageView.image = image;
@@ -1207,7 +1205,7 @@ typedef enum : NSUInteger {
     label.textColor = [UIColor whiteColor];
     label.textAlignment = NSTextAlignmentCenter;
     label.backgroundColor = [UIColor clearColor];
-    label.font = [UIFont boldSystemFontOfSize:TEXTFONTSIZE];
+    label.font = [UIFont boldSystemFontOfSize:14];
     label.text = message;
     label.numberOfLines = 0;
     CGSize size = [label sizeThatFits:CGSizeMake(MIN(self.view.frame.size.width, self.view.frame.size.height) - 80, CGFLOAT_MAX)];
@@ -1328,7 +1326,7 @@ typedef enum : NSUInteger {
                 [self.frontViewArr addObject:changeFront];
                 
                 CGRect rect = changeScView.frame;
-                rect.origin.x = (_page+RGIGViewIndexM)*pageWidth;
+                rect.origin.x = (_page+RGIGViewIndexM)*kRGImagePageWidth;
                 changeScView.frame  = rect;
                 changeFront.frame = rect;
                 
@@ -1355,7 +1353,7 @@ typedef enum : NSUInteger {
                 [self.frontViewArr insertObject:changeFront atIndex:0];
 
                 CGRect rect = changeScView.frame;
-                rect.origin.x = (_page-RGIGViewIndexM)*pageWidth;
+                rect.origin.x = (_page-RGIGViewIndexM)*kRGImagePageWidth;
                 changeScView.frame  = rect;
                 changeFront.frame = rect;
                 [self loadThumbnail:changeImageView withScrollView:changeScView frontView:changeFront atPage:_page-RGIGViewIndexM];
@@ -1503,7 +1501,7 @@ typedef enum : NSUInteger {
         // scroll
         [self setPositionAtPage:_page ignoreIndex:-1];
         [self.bgScrollView setDelegate:nil];
-        [self.bgScrollView setContentOffset:CGPointMake(_page*pageWidth, 0) animated:NO];
+        [self.bgScrollView setContentOffset:CGPointMake(_page*kRGImagePageWidth, 0) animated:NO];
         [self.bgScrollView setDelegate:self];
     }
     
@@ -1530,7 +1528,7 @@ typedef enum : NSUInteger {
     }
     
     NSInteger newCount = [self getCountWithSetContentSize:NO];
-    NSInteger oldCount = self.bgScrollView.contentSize.width / pageWidth;
+    NSInteger oldCount = self.bgScrollView.contentSize.width / kRGImagePageWidth;
     
     BOOL hasDataAfterCurrentPage = self.page < (oldCount - 1);
     
@@ -1563,7 +1561,7 @@ typedef enum : NSUInteger {
         // forward
         [self setPositionAtPage:_page ignoreIndex:-1];
         [self.bgScrollView setDelegate:nil];
-        [self.bgScrollView setContentOffset:CGPointMake(_page*pageWidth, 0) animated:NO];
+        [self.bgScrollView setContentOffset:CGPointMake(_page*kRGImagePageWidth, 0) animated:NO];
         [self.bgScrollView setDelegate:self];
     }
     

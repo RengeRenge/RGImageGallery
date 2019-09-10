@@ -1,5 +1,5 @@
 #
-#  Be sure to run `pod spec lint RGUIKit.podspec' to ensure this is a
+#  Be sure to run `pod spec lint RGImageGallery.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
 #
 #  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html
@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "RGImageGallery"
   s.version      = "1.0.0"
-  s.summary      = "Slideshow image or video, transition animate and interaction gesture like system "Photos" app"
+  s.summary      = "Slideshow image or video"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-			Slideshow image or video, transition animate and interaction gesture like system "Photos" app
+			Slideshow image or video, customizable display view.
                    DESC
 
   s.homepage     = "https://github.com/RengeRenge/RGImageGallery.git"
@@ -132,4 +132,5 @@ Pod::Spec.new do |s|
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
+
 end
