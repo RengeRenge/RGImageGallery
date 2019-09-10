@@ -2,10 +2,10 @@
 ## RGImageGallery
 RGImageGallery is a viewController which could display image or video like slide show
 
-- Transition animate and interaction gesture like system "Photos" app
+- Transition animations and interaction gestures like system "Photos" app
 - Customizable toolbar and displayView
 
-[RGImagePicker](https://github.com/RengeRenge/RGImagePicker) use RGImageGallery to display image, the following screenshots are from RGImagePicker
+RGImageGallery is used for [RGImagePicker](https://github.com/RengeRenge/RGImagePicker) to display image. There are some screenshots of [RGImagePicker](https://github.com/RengeRenge/RGImagePicker)
 
 ![1](https://user-images.githubusercontent.com/14158970/64589139-f2b63400-d3d6-11e9-9f8b-39c8efb510a4.gif)
 ![2](https://user-images.githubusercontent.com/14158970/64589143-f34eca80-d3d6-11e9-89ad-b731b70dd566.gif)
@@ -145,7 +145,7 @@ Pinch gesture should add into your view, and control progress by yourself. Here 
                 [self.imageGallery updateInteractionPushSize:size];
                 
                 UIView *view = [self.imageGallery interactionPushView];
-                CGFloat progress = (view.frame.size.width - gesture.view.rg_originSize.width) / self.view.frame.size.width;
+                CGFloat progress = (view.frame.size.width - self.rg_originSize.width) / self.view.frame.size.width;
                 [self.imageGallery updateInteractionPushProgress:progress];
             }
             break;
@@ -158,7 +158,7 @@ Pinch gesture should add into your view, and control progress by yourself. Here 
             UIView *view = [self.imageGallery interactionPushView];
             CGFloat progress = [self.imageGallery interactionPushProgress];
             if (!progress) {
-                progress = (view.frame.size.width - gesture.view.rg_originSize.width) / self.view.frame.size.width;
+                progress = (view.frame.size.width - self.rg_originSize.width) / self.view.frame.size.width;
             }
             // finish interaction push, if gesture.scale >= 1, we think push result is succeed
             [self.imageGallery finishInteractionPush:gesture.scale >= 1 progress:progress];
