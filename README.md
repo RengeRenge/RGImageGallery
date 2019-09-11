@@ -7,6 +7,8 @@ RGImageGallery is a viewController which could display image or video like slide
 
 RGImageGallery is used for [RGImagePicker](https://github.com/RengeRenge/RGImagePicker) to display image. There are some screenshots of [RGImagePicker](https://github.com/RengeRenge/RGImagePicker)
 
+[Demo video](https://renged.xyz/static/image/config/RGImageGallery.MP4)
+
 ![1](https://user-images.githubusercontent.com/14158970/64589139-f2b63400-d3d6-11e9-9f8b-39c8efb510a4.gif)
 ![2](https://user-images.githubusercontent.com/14158970/64589143-f34eca80-d3d6-11e9-89ad-b731b70dd566.gif)
 ![3](https://user-images.githubusercontent.com/14158970/64589144-f34eca80-d3d6-11e9-9a5d-9f00c6907aee.gif)
