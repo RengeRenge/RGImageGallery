@@ -667,9 +667,8 @@ typedef enum : NSUInteger {
             }
         }
         
-        __block BOOL L,R,U,D = NO;
-        __block CGRect largePushFrame =
-        CGRectInset(pushFrame, -pWidth*pct, -pHeight*pct);;
+        __block BOOL L = NO, R = NO, U = NO, D = NO;
+        __block CGRect largePushFrame = CGRectInset(pushFrame, -pWidth*pct, -pHeight*pct);
         
         void(^calOffSet)(CGPoint pP, CGPoint oP) = ^(CGPoint pP, CGPoint oP) {
             if (!L && pP.x < oP.x) { // 向左
