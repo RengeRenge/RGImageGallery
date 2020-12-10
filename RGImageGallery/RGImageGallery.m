@@ -668,28 +668,22 @@ typedef enum : NSUInteger {
         }
         
         __block BOOL L = NO, R = NO, U = NO, D = NO;
-        __block CGRect largePushFrame = CGRectInset(pushFrame, -pWidth*pct, -pHeight*pct);
-        
         void(^calOffSet)(CGPoint pP, CGPoint oP) = ^(CGPoint pP, CGPoint oP) {
             if (!L && pP.x < oP.x) { // 向左
                 L = YES;
-                largePushFrame.origin.x -= offSetX;
             }
             if (!R && pP.x > oP.x) { // 向右
                 R = YES;
-                largePushFrame.origin.x += offSetX;
             }
             if (!U && pP.y < oP.y) { // 向上
                 U = YES;
-                largePushFrame.origin.y -= offSetY;
             }
             if (!D && pP.y > oP.y) { // 向下
                 D = YES;
-                largePushFrame.origin.y += offSetY;
             }
         };
         
-        if (oFrame.size.height*oFrame.size.width > pushFrame.size.height * pushFrame.size.width) {
+        if (oFrame.size.height * oFrame.size.width > pushFrame.size.height * pushFrame.size.width) {
             imageView.frame = pushFrame;
         } else {
             calOffSet(pushFrame.origin, oFrame.origin);
@@ -705,7 +699,28 @@ typedef enum : NSUInteger {
                       CGPointMake(CGRectGetMinX(pushFrame), CGRectGetMaxY(pushFrame)),
                       CGPointMake(CGRectGetMinX(oFrame), CGRectGetMaxY(oFrame))
                       );
-            imageView.frame = largePushFrame;
+            
+            CGFloat LOffset = 0, ROffset = 0, UOffset = 0, DOffset = 0;
+            if (U) {
+                UOffset = CGRectGetMinY(oFrame) - CGRectGetMinY(pushFrame);
+            }
+            if (D) {
+                DOffset = CGRectGetMaxY(pushFrame) - CGRectGetMaxY(oFrame);
+            }
+            if (L) {
+                LOffset = CGRectGetMinX(oFrame) - CGRectGetMinX(pushFrame);
+            }
+            if (R) {
+                ROffset = CGRectGetMaxX(pushFrame) - CGRectGetMaxX(oFrame);
+            }
+            UIEdgeInsets insets =
+            UIEdgeInsetsMake(
+                             -offSetY*UOffset/(UOffset+DOffset),
+                             -offSetX*LOffset/(LOffset+ROffset),
+                             -offSetY*DOffset/(UOffset+DOffset),
+                             -offSetX*ROffset/(LOffset+ROffset)
+                             );
+            imageView.frame = UIEdgeInsetsInsetRect(pushFrame, insets);
         }
         if (play.enabled) {
             play.center = [imageView.superview convertPoint:imageView.center toView:frontView];
