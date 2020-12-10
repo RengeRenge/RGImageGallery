@@ -145,6 +145,26 @@ typedef enum : NSUInteger {
 
 @end
 
+@interface UIColor (DARKMODE)
+
+@end
+
+@implementation UIColor (DARKMODE)
+
++ (UIColor *)ig_systemBackgroundColor {
+    if (@available(iOS 13.0, *)) {
+        return [UIColor systemBackgroundColor];
+    } else {
+        return [UIColor whiteColor];
+    }
+}
+
++ (UIColor *)ig_systemBackgroundColorAlpha:(CGFloat)alpha {
+    return [[self ig_systemBackgroundColor] colorWithAlphaComponent:alpha];
+}
+
+@end
+
 @interface RGImageGallery() <UIScrollViewDelegate, UIAlertViewDelegate, UIGestureRecognizerDelegate>
 
 @property (strong,nonatomic) NSMutableArray<UIScrollView *>  *scrollViewArr;
@@ -225,7 +245,7 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad{
     [super viewDidLoad];
-    [self.view setBackgroundColor:[UIColor whiteColor]];
+    [self.view setBackgroundColor:[UIColor ig_systemBackgroundColor]];
     [self initImageScrollViewArr];
     [self.view addSubview:self.bgScrollView];
     _hideTopBar = NO;
@@ -280,7 +300,7 @@ typedef enum : NSUInteger {
         self.navigationControllerDelegate.interactionController = controller;
     }
     [self hide:!self.hideTopBar topbarWithAnimateDuration:0 backgroundChange:NO];
-    [self hide:self.hideTopBar topbarWithAnimateDuration:0 backgroundChange:NO];
+    [self hide:self.hideTopBar topbarWithAnimateDuration:0 backgroundChange:YES];
     
     if (self.pushState != RGImageGalleryPushStatePushed) {
         _pushState = RGImageGalleryPushStatePushed;
@@ -1029,13 +1049,13 @@ typedef enum : NSUInteger {
                 [UIView animateWithDuration:duration animations:^{
                     animate();
                     if (change) {
-                        [self.view setBackgroundColor:hide ? [UIColor blackColor] : [UIColor whiteColor]];
+                        [self.view setBackgroundColor:hide ? [UIColor blackColor] : [UIColor ig_systemBackgroundColor]];
                     }
                 }];
             } else {
                 animate();
                 if (change) {
-                    [self.view setBackgroundColor:hide ? [UIColor blackColor] : [UIColor whiteColor]];
+                    [self.view setBackgroundColor:hide ? [UIColor blackColor] : [UIColor ig_systemBackgroundColor]];
                 }
             }
         });
@@ -2117,7 +2137,7 @@ typedef enum : NSUInteger {
                 }
             };
             
-            [toVC.view setBackgroundColor:[UIColor colorWithWhite:1 alpha:0]];
+            [toVC.view setBackgroundColor:[UIColor ig_systemBackgroundColorAlpha:0]];
             if (!self.transitionDelegate.interactive) {
                 [UIView animateWithDuration:duration*0.6 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                     [toVC setMiddleImageViewWhenPushAnimate];
@@ -2201,11 +2221,11 @@ typedef enum : NSUInteger {
 }
 
 - (void)addAnimationForBackgroundColorInPushToVC:(RGImageGallery *)toVC {
-    [toVC.view setBackgroundColor:[UIColor colorWithWhite:1 alpha:1]];
+    [toVC.view setBackgroundColor:[UIColor ig_systemBackgroundColor]];
 }
 
 - (void)addAnimationForBackgroundColorInPopWithFakeBackground:(UIView *)toView {
-    [toView setBackgroundColor:[UIColor colorWithWhite:1 alpha:0]];
+    [toView setBackgroundColor:[UIColor ig_systemBackgroundColorAlpha:0]];
 }
 
 - (void)addAnimationForBarFrom:(RGImageGallery *)imageGallery isPush:(BOOL)isPush {
